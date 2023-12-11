@@ -1,35 +1,28 @@
 # models/titanic.py
-import numpy as np
-import pickle
+import os
 import joblib
 import pandas as pd
 
 
 class Titanic:
     model = None
+    path = '.ml-model/_titanic.pkl'
 
-    def __init__(self):
-        """Inicializa o modelo
-        """
+    def __init__(self, path='.ml-model/_titanic.pkl'):
+        """Inicializa o modelo do Titanic"""
+        self.path = path
         self.load_model()
 
-    def load_model(self, path='.ml-model/_titanic.pkl'):
-        """Carrega o modelo treinado
-        """
-        # carrrega o modelo usando a biblioteca apropriada
-        switcher = {
-            # '.pkl': pickle.load(open(path, 'rb')),
-            '.pkl': joblib.load(path),
-            '.joblib': joblib.load(path)
-        }
-        self.model = switcher.get(path[-4:], "Modelo não suportado")
-        return self
+    def load_model(self):
+        """Carrega o modelo treinado."""
+        if os.path.exists(self.path):
+            self.model = joblib.load(self.path)
+        else:
+            raise FileNotFoundError(f"Modelo não encontrado em: {self.path}")
 
     def predict_survival(self, passenger):
         """Faz a predição de sobrevivência ou morte de um passageiro do Titanic
         """
-        print(f"Fazendo predição do passageiro {passenger}")
-
         # criar um dataframe com os dados do passageiro formatando as colunas para compatibilidade com o modelo
         data = {
             'Pclass': [passenger.pclass],
@@ -46,3 +39,12 @@ class Titanic:
         # fazer a predição
         survival = self.model.predict(df)
         return int(survival[0])
+
+    def predict(self, data):
+        """Faz a predição de sobrevivência ou morte de um passageiro do Titanic
+        """
+        # criar um dataframe com os dados do passageiro formatando as colunas para compatibilidade com o modelo
+        df = pd.DataFrame(data)
+
+        # fazer a predição
+        return self.model.predict(df)
