@@ -9,24 +9,17 @@ from models.base import Base
 from models.titanic import Titanic
 from models.passenger import Passenger
 
+if os.environ.get("TESTING") == "True":
+    db_url = "sqlite:///:memory:"
+else:
+    db_path = "database/"
+    if not os.path.exists(db_path):
+        os.makedirs(db_path)
+    db_url = 'sqlite:///%s/titanic.sqlite3' % db_path
 
-db_path = "database/"
-# se o diretorio não existir, então cria
-if not os.path.exists(db_path):
-    os.makedirs(db_path)
-
-# define o caminho do banco
-db_url = 'sqlite:///%s/titanic.sqlite3' % db_path
-
-# cria o engine do banco
 engine = create_engine(db_url, echo=False)
-
-# cria a sessão do banco
 Session = sessionmaker(bind=engine)
 
-# cria o banco se não existir
-if not database_exists(engine.url):
+if not os.environ.get("TESTING") and not database_exists(engine.url):
     create_database(engine.url)
-
-# cria as tabelas, caso não existam
-Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
