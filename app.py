@@ -9,7 +9,6 @@ from models import Session, Titanic, passenger
 from models.passenger import Passenger
 from schemas.error_schema import ErrorSchema
 from schemas.passenger_schema import PassengerViewSchema, PassengerSearchSchema, PassengerSchema
-from utils.transformers import CabinToNumber
 
 # Informações da API
 info = Info(title="API - Titanic", version="0.0.1",
